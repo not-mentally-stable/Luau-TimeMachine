@@ -127,3 +127,7 @@ store:jump(1)
 
 print("Current index:", store:getIndex())
 ```
+---
+[![License: ](https://img.shields.io/badge/License%3A-MIT-green?style=plastic)](https://github.com/not-mentally-stable/Luau-TimeMachine/blob/main/LICENSE)
+
+[![Scripting Language: LUAU](https://img.shields.io/badge/Scripting%20Language%3A-LUAU-blue?style=plastic)](https://luau.org)
