@@ -88,7 +88,7 @@ Returns the most recent state difference.
 # Example Usage
 
 ```Luau
-local TimeMachine = require(path.to.module)
+local TimeMachine = require("./TimeMachine")
 
 local store = TimeMachine.new({
     score = 0,
