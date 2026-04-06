@@ -9,6 +9,17 @@ Designed for drag-and-drop use in any Roblox experience or Luau projects, this m
 ```Luau
 local TimeMachine = require("./TimeMachine")
 ```
+or on **RobloxStudio** you can execute this command in the **commandbar**
+```Luau
+local Http = game:GetService("HttpService")
+local Selection = game:GetService("Selection")
+Http.HttpEnabled = true
+
+local Module = Instance.new("ModuleScript", Selection:Get()[1] or game:GetService("ReplicatedStorage"))
+Module.Name = "TimeMachine"
+Module.Source = Http:GetAsync("https://raw.githubusercontent.com/not-mentally-stable/Luau-TimeMachine/refs/heads/main/TimeMachine.luau")
+Selection:Set({Module})
+```
 
 # Quick Example
 ```Luau
