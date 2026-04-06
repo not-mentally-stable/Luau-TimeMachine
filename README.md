@@ -1,72 +1,129 @@
-a robust, type-strict state management container for Luau with built-in history tracking, undo/redo functionality, and granular observers.
-Inspired by the TimeMachine utility for other languages.
-Features
- * Undo/Redo: Effortlessly navigate through state history.
- * Transactions: Batch multiple changes into a single history entry.
- * Observers: watch specific keys or subscribe to every state change.
- * Luau Strict: Fully type-checked for a better developer experience.
-# Quick Start
-Basic Usage
-```Luau
-local TimeMachine = require("./TimeMachine.luau")
+# TimeMachine (Luau)
+A lightweight, framework-agnostic state management module for Luau with built-in time-travel debugging, inspired by Time Machine Debugging (TMD) concepts from other languages.
+Designed for drag-and-drop use in any Roblox experience or Luau projects, this module enables predictable state updates, history tracking, undo/redo, transactions, and reactive subscriptions.
 
-local machine = TimeMachine.new({
-    score = 0,
+# Installation
+1. Download the ``TimeMachine.luau``
+2. Place the module in anywhere accessible.
+3. Require it:
+```Luau
+local TimeMachine = require("./TimeMachine")
+```
+
+# Quick Example
+```Luau
+local TimeMachine = require("./TimeMachine")
+
+local store = TimeMachine.new({
+    coins = 0,
     health = 100
 })
-```
 
-Listen for specific changes
-```Luau
-machine:watch("score", function(new, old)
-    print(`Score changed: {old} -> {new}`)
+store:subscribe(function(newState, oldState, diff)
+    print("State changed!", diff)
 end)
+
+store:set("coins", 10)
+store:update("health", function(h)
+    return h - 20
+end)
+
+store:undo()
+store:redo()
 ```
 
-set/get
+# API Documentation
+
+``new(initial: State): TimeMachine``
+Creates a new TimeMachine instance with an initial state.
+
+``get(key: string): any``
+Returns the value stored at the given key.
+
+``set(key: string, value: any): ()``
+Sets a value in the state and records it in history.
+
+``update(key: string, fn: (any) -> any): ()``
+Updates a value using a function that receives the current value.
+
+``merge(partial: State): ()``
+Merges a partial state into the current state.
+
+``undo(): ()``
+Reverts the state to the previous snapshot.
+
+``redo(): ()``
+Re-applies a previously undone state.
+
+``jump(index: number): ()``
+Jumps to a specific point in history.
+
+``getHistory(): {State}``
+Returns the full history of state snapshots.
+
+``getIndex(): number``
+Returns the current position in the history timeline.
+
+``clearHistory(): ()``
+Clears all history except the current state.
+
+``commit(name: string, fn: (state: State) -> ()): ()``
+Applies multiple changes in a single commit using a draft state.
+
+``beginTransaction(): ()``
+Starts a transaction. Changes won't be committed until ended.
+
+``endTransaction(): ()``
+Ends a transaction and commits all accumulated changes.
+
+``watch(key: string, cb: (new: any, old: any) -> ()): ()``
+Watches a specific key for changes.
+
+``subscribe(cb: (newState: State, oldState: State, diff: Diff) -> ()): ()``
+Subscribes to all state changes.
+
+``getLastDiff(): Diff``
+Returns the most recent state difference.
+
+# Example Usage
+
 ```Luau
-machine:set("score", 10) -- Output: Score changed: 0 -> 10
-print(machine:get("score")) -- 10
+local TimeMachine = require(path.to.module)
+
+local store = TimeMachine.new({
+    score = 0,
+    lives = 3
+})
+
+-- Watch a single key
+store:watch("score", function(new, old)
+    print("Score changed:", old, "->", new)
+end)
+
+-- Subscribe to all changes
+store:subscribe(function(newState, oldState, diff)
+    print("Global change:", diff)
+end)
+
+-- Basic updates
+store:set("score", 100)
+
+store:update("lives", function(lives)
+    return lives - 1
+end)
+
+-- Batch updates with transaction
+store:beginTransaction()
+store:set("score", 200)
+store:set("lives", 1)
+store:endTransaction()
+
+-- Undo / Redo
+store:undo()
+store:redo()
+
+-- Jump in history
+store:jump(1)
+
+print("Current index:", store:getIndex())
 ```
-
-Undo, Redo, and History
-```Luau
-machine:set("score", 20)
-machine:set("score", 30)
-```
-
-other
-```Luau
-machine:undo() -- Back to 20
-machine:undo() -- Back to 10
-machine:redo() -- Forward to 20
-
-print(machine:getIndex()) -- Current position in history
-print(machine:getHistory()) -- Table of all previous states
-```
-
-Batching with Transactions
-Use transactions to prevent the history stack from getting cluttered during multiple rapid updates.
-```Luau
-machine:beginTransaction()
-
-machine:set("score", 50)
-machine:set("health", 80)
-machine:merge({ score = 100, health = 10 })
-
-machine:endTransaction() -- All changes above count as ONE history step
-```
-
-# API Reference
-| Method | Description |
-|---|---|
-| get(key) | Returns the value of a specific key. |
-| set(key, value) | Updates a key and commits to history. |
-| update(key, fn) | Updates a key using a transformation function. |
-| merge(partial) | Merges a table of changes into the current state. |
-| undo() | Reverts to the previous state. |
-| redo() | Moves forward to the next state in history. |
-| jump(index) | Jumps to a specific point in the history stack. |
-| watch(key, cb) | Fires a callback when a specific key changes. |
-| subscribe(cb) | Fires a callback on any state change. |
-| beginTransaction() | Stops recording history steps until endTransaction is called. |
