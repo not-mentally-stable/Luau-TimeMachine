@@ -1,5 +1,5 @@
 # TimeMachine (Luau)
-A lightweight, framework-agnostic state management module for Luau with built-in time-travel debugging, inspired by Time Machine Debugging (TMD) concepts from other languages.
+A lightweight, framework-agnostic state management module for Luau with built-in time-travel debugging, inspired by Time Travel Debugging (TTD) concepts from other languages.
 Designed for drag-and-drop use in any Roblox experience or Luau projects, this module enables predictable state updates, history tracking, undo/redo, transactions, and reactive subscriptions.
 
 # Installation
